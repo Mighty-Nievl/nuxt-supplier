@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <tr v-if="goods.length === 0">
-          <td colspan="6" class="text-center text-gray-500 py-8">
+          <td colspan="6" class="text-center text-gray-500 dark:text-gray-400 py-8">
             {{ emptyMessage }}
           </td>
         </tr>
@@ -25,10 +25,10 @@
         >
           <td>{{ formatDate(item.purchaseDate) }}</td>
           <td>
-            <div class="font-medium">{{ item.supplierName }}</div>
-            <div class="text-xs text-gray-500">{{ item.items.length }} item</div>
+            <div class="font-medium text-gray-900 dark:text-gray-100">{{ item.supplierName }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">{{ item.items.length }} item</div>
           </td>
-          <td class="font-semibold">{{ formatCurrency(item.totalAmount) }}</td>
+          <td class="font-semibold text-gray-900 dark:text-gray-100">{{ formatCurrency(item.totalAmount) }}</td>
           <td>
             <div>{{ formatDate(item.dueDate) }}</div>
             <div class="text-xs" :class="getDueDateColor(item.dueDate, item.paymentStatus)">
@@ -56,7 +56,7 @@
               </button>
               <button
                 @click.stop="$emit('delete', item.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                 title="Hapus"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,18 +76,18 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
         @click.self="closeConfirmModal"
       >
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 text-center">
-          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white dark:bg-gray-800 rounded-xl max-w-sm w-full p-6 text-center">
+          <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-green-600 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Konfirmasi Pembayaran</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Konfirmasi Pembayaran</h3>
           
           <div class="flex gap-3 justify-center w-full">
             <button 
               @click="closeConfirmModal" 
-              class="btn bg-red-50 text-red-600 hover:bg-red-100 w-36 font-bold flex justify-center items-center"
+              class="btn bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 w-36 font-bold flex justify-center items-center"
             >
               Batal
             </button>
@@ -142,10 +142,10 @@ const handleConfirm = () => {
 }
 
 const getDueDateColor = (dueDate: string, status: 'paid' | 'unpaid') => {
-  if (status === 'paid') return 'text-green-600'
-  if (isOverdue(dueDate)) return 'text-red-600 font-semibold'
-  if (isUpcoming(dueDate, 7)) return 'text-yellow-600 font-semibold'
-  return 'text-gray-500'
+  if (status === 'paid') return 'text-green-600 dark:text-green-500'
+  if (isOverdue(dueDate)) return 'text-red-600 dark:text-red-500 font-semibold'
+  if (isUpcoming(dueDate, 7)) return 'text-yellow-600 dark:text-yellow-500 font-semibold'
+  return 'text-gray-500 dark:text-gray-400'
 }
 </script>
 

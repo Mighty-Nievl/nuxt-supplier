@@ -7,7 +7,7 @@ import type {
   AppSettings,
   SupplierStats
 } from '~/types/supplier'
-import { addDays, parseISO, formatISO } from 'date-fns'
+import { addDays, addWeeks, addMonths, parseISO, formatISO } from 'date-fns'
 
 const SUPPLIERS_KEY = 'suppliers'
 const INCOMING_GOODS_KEY = 'incoming_goods'
@@ -283,14 +283,66 @@ export const useSupplierStore = defineStore('supplier', {
 
     calculateDueDate(purchaseDate: string, supplier: Supplier): string {
       const purchase = parseISO(purchaseDate)
+      let dueDate = new Date(purchase)
 
+      // Step 1: Calculate base due date
       if (supplier.dueDateType === 'days') {
         const days = Number(supplier.dueDateValue)
-        return formatISO(addDays(purchase, days))
+        dueDate = addDays(purchase, days)
+      } else if (supplier.dueDateType === 'weeks') {
+        const weeks = Number(supplier.dueDateValue)
+        dueDate = addWeeks(purchase, weeks)
+      } else if (supplier.dueDateType === 'months') {
+        const months = Number(supplier.dueDateValue)
+        dueDate = addMonths(purchase, months)
       } else {
-        // dueDateType === 'date', return the specific date
-        return supplier.dueDateValue as string
+        // dueDateType === 'date', calculate next occurrence of specific date
+        const targetDate = Number(supplier.dueDateValue)
+        const purchaseDay = purchase.getDate()
+        const purchaseMonth = purchase.getMonth()
+        const purchaseYear = purchase.getFullYear()
+
+        // If purchase date is before target date in same month, use same month
+        // Otherwise, use next month
+        let dueMonth = purchaseDay < targetDate ? purchaseMonth : purchaseMonth + 1
+        let dueYear = purchaseYear
+
+        // Handle year rollover
+        if (dueMonth > 11) {
+          dueMonth = 0
+          dueYear++
+        }
+
+        // Create due date, handling invalid dates (e.g., Feb 31 -> Feb 28/29)
+        dueDate = new Date(dueYear, dueMonth, targetDate)
+        
+        // If the day doesn't match (e.g., set to 31 but month only has 30 days),
+        // it will automatically roll to next month. We need to go back to last day of intended month.
+        if (dueDate.getDate() !== targetDate) {
+          dueDate.setDate(0) // Go to last day of previous month
+        }
       }
+
+      // Step 2: Adjust for collection day (if specified)
+      if (supplier.collectionDay !== undefined) {
+        const targetDay = supplier.collectionDay // 0-6 (0=Sunday, 1=Monday, etc)
+        const currentDay = dueDate.getDay()
+        
+        // Calculate days to add to reach target day
+        let daysToAdd = targetDay - currentDay
+        if (daysToAdd <= 0) {
+          daysToAdd += 7 // Move to next week if target day has passed
+        }
+        
+        dueDate = addDays(dueDate, daysToAdd)
+      }
+
+      // Step 3: Add additional weeks (if specified)
+      if (supplier.additionalWeeks && supplier.additionalWeeks > 0) {
+        dueDate = addWeeks(dueDate, supplier.additionalWeeks)
+      }
+
+      return formatISO(dueDate)
     },
 
     generateId(): string {

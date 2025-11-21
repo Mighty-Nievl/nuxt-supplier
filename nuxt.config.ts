@@ -5,6 +5,13 @@ export default defineNuxtConfig({
   
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   
+  // Tailwind CSS configuration
+  tailwindcss: {
+    config: {
+      darkMode: 'class', // Enable class-based dark mode
+    }
+  },
+  
   app: {
     head: {
       title: 'Supplier Management - Pencatatan Barang & Jatuh Tempo',

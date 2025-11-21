@@ -1,12 +1,14 @@
 // Type definitions for Supplier Management System
 
-export type DueDateType = 'date' | 'days'
+export type DueDateType = 'date' | 'days' | 'weeks' | 'months'
 
 export interface Supplier {
   id: string
   name: string
-  dueDateType: DueDateType // 'date' untuk tanggal spesifik, 'days' untuk jumlah hari
-  dueDateValue: string | number // tanggal (ISO string) atau jumlah hari (number)
+  dueDateType: DueDateType // 'date' | 'days' | 'weeks' | 'months'
+  dueDateValue: string | number // tanggal spesifik (1-31) atau jumlah (hari/minggu/bulan)
+  collectionDay?: number // 0-6 (0=Minggu, 1=Senin, dst) - opsional, hari penagihan
+  additionalWeeks?: number // 0-52 - opsional, tambahan minggu setelah collection day
   createdAt: string
   updatedAt: string
 }
